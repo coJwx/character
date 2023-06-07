@@ -1,0 +1,147 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+
+</head>
+
+<body>
+    <!DOCTYPE html>
+    <html lang="zh-cn">
+
+    <head>
+        <meta charset="utf-8">
+        <title>Chat AI</title>
+        <meta name="viewport"
+            content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+        <link rel="icon" href="https://ai-chenye.netlify.app/favicon.jpg">
+        <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/mdui/1.0.2/css/mdui.min.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+            integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" id="saukra_css-css" href="css/index.css" type="text/css" media="all">
+        <script src="https://cdn.staticfile.org/jquery/3.6.2/jquery.min.js"></script>
+        <script src="https://cdn.staticfile.org/markdown-it/13.0.1/markdown-it.min.js"></script>
+    </head>
+
+    <body class="mdui-appbar-with-toolbar mdui-bottom-nav-fixed mdui-theme-primary-indigo mdui-theme-accent-indigo"
+        style="padding-bottom:280px;">
+        <div class="chat-container" style="z-index: 1;position: relative;">
+            <!-- 头部展示 -->
+            <div class="mdui-appbar mdui-appbar-fixed mdui-valign" style="background-color: #667788;">
+                <!-- <h1 class="mdui-center" style="color:#faf8e9;">Chat AI</h1> -->
+                <div class="control-container">
+                    <div class="btnGenericText" onclick="onSelectBG()">
+                        <b>更换背景</b>
+                    </div>
+                    <select class="selectCharacter form-control" disabled
+                        style="width: 330px; height: 40px; background-color: #24252d; color: #ffffff; display: inline-block; border-color: #5c5d70;"></select>
+                    <div class="selectAnimation btn-group" style="display: inline-block; vertical-align: initial">
+                    </div>
+                    <button class="btnGenericText">显示对话记录</button>
+                </div>
+            </div>
+            <!-- 侧边栏 -->
+            <div id="arrow">›</div>
+            <div id="sidebar">
+                <div class="content">
+                    <h3 style="color: #faf8e9;">语音朗读</h3>
+                    <label class="switch">
+                        <input type="checkbox" id="switch1" checked="true">
+                        <span class="slider round"></span>
+                    </label>
+                    <!-- <h3 style="color: #faf8e9;">API KEY</h3>
+                    <div class="sider-input-wrapper">
+                        <input class="sider-input" id="apikey" type="text">
+                    </div> -->
+                </div>
+            </div>
+            <!-- 对话展示 -->
+            <div class="mdui-container">
+                <div id="chatbox" class=" mdui-p-a-1 mdui-m-t-3 mdui-row"></div>
+            </div>
+            <!-- 底部固定 -->
+            <div class="mdui-bottom-nav  mdui-container-fluid"
+                style="height:auto; flex-direction: column; padding: 20px; z-index: 1;">
+                <div class="mdui-container" style="display: flex;">
+                    <div style="width: 100%;position: relative;">
+                        <div id="voiceButton" class="voice-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="24" height="24"
+                                class="tabler-icon tabler-icon-send" viewBox="0 0 853.000000 1280.000000"
+                                preserveAspectRatio="xMidYMid meet">
+                                <g transform="translate(0.000000,1280.000000) scale(0.100000,-0.100000)" fill="#000000"
+                                    stroke="none">
+                                    <path
+                                        d="M4060 12789 c-194 -22 -402 -81 -577 -164 -472 -224 -789 -626 -894 -1135 l-24 -115 0 -2575 c0 -2452 1 -2579 18 -2665 145 -710 755 -1260 1492 -1345 327 -37 671 21 975 166 473 226 789 629 892 1137 l23 112 0 2575 c0 2448 -1 2579 -18 2665 -116 576 -556 1066 -1134 1264 -227 78 -508 108 -753 80z" />
+                                    <path
+                                        d="M301 8004 c-158 -42 -262 -156 -292 -319 -7 -38 -9 -312 -6 -839 3 -648 7 -805 21 -921 64 -538 177 -928 391 -1350 184 -361 380 -630 670 -920 529 -528 1216 -906 2020 -1110 116 -29 231 -56 258 -60 l47 -7 0 -854 0 -854 -657 0 c-717 0 -743 -2 -851 -57 -69 -35 -155 -127 -176 -189 -53 -155 36 -357 203 -463 103 -66 -69 -61 2341 -61 2377 0 2235 -3 2349 54 64 33 144 122 173 194 19 49 23 75 23 182 0 120 -1 128 -32 192 -36 76 -100 146 -165 179 -95 48 -100 49 -820 49 l-678 0 0 854 c0 805 1 855 18 860 9 2 33 7 52 11 406 77 934 271 1313 484 1088 609 1778 1567 1971 2736 48 288 51 352 51 1150 l0 760 -23 58 c-63 155 -190 243 -367 254 -147 10 -260 -32 -350 -129 -32 -34 -63 -80 -76 -115 l-24 -58 -6 -785 c-6 -737 -11 -850 -39 -1050 -100 -705 -417 -1330 -913 -1794 -538 -505 -1229 -810 -2052 -908 -146 -17 -674 -17 -820 0 -663 79 -1253 297 -1735 642 -683 489 -1111 1202 -1230 2050 -28 194 -33 327 -39 1060 l-6 785 -24 58 c-44 111 -161 208 -282 236 -62 15 -175 12 -238 -5z" />
+                                </g>
+                            </svg>
+                        </div>
+                        <textarea id="userInput" class="mdui-textfield-input mdui-m-y-1 mdui-row mdui-color-grey-50"
+                            style="border-radius: 4px; border: 1px solid black; padding:20px 50px;" type="text"
+                            style="background-color: #f4f8fb;" rows="1" autofocus></textarea>
+                        <div id="sendButton" class="send-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" strokeWidth="2" size="24" class="tabler-icon tabler-icon-send">
+                                <path d="M10 14l11 -11"></path>
+                                <path d="M21 3l-6.5 18a.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a.55 .55 0 0 1 0 -1l18 -6.5">
+                                </path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="live-2d" style="position: fixed; top: 0;">
+            <!-- <div class="header-user-avatar">
+                <a>
+                    <img class="faa-shake animated-hover" src="css/login.png" width="30" height="30"
+                        data-pagespeed-url-hash="2350458896">
+                </a>
+            </div> -->
+            <!-- Canvas -->
+            <div class="character-container" style="overflow: hidden;">
+                <div class="Canvas" id="L2dCanvas"></div>
+            </div>
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+        <script src="https://cdn.bootcdn.net/ajax/libs/mdui/1.0.2/js/mdui.min.js"></script>
+
+        <!-- Promise-polyfill -->
+        <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js "> </script>
+
+        <!-- Live2DCubismCore -->
+        <script
+            src="https://cdn.jsdelivr.net/gh/litstronger/live2d-moc3@master/js/frame/live2dcubismcore.min.js"></script>
+
+        <!-- Include Pixi. -->
+        <!-- <script src="https://cdn.staticfile.org/pixi.js/4.6.1/pixi.min.js"></script> -->
+        <script src="https://cdn.staticfile.org/pixi.js/4.8.1/pixi.min.js"></script>
+
+        <!-- Include Cubism Components. -->
+        <script src="js/live2dcubismframework.js"></script>
+        <script src="js/live2dcubismpixi.js"></script>
+
+        <!-- User's Script -->
+        <script src="js/backgroundData.js"></script>
+        <script src="js/charData.js"></script>
+        <script src="js/l2d.js"></script>
+        <script src="js/main.js"></script>
+        <script src="js/chat.js"></script>
+    </body>
+
+    </html>
+    <script>
+
+    </script>
+</body>
+
+</html>

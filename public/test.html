@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>WebSocket Chat</title>
+    <script>
+        var websocket;
+        window.onload = function () {
+            websocket = new WebSocket("ws://localhost:8765");
+            websocket.onopen = function () {
+                console.log("Connected to server.");
+                const timestamp = (new Date()).getTime();
+                websocket.send(`${timestamp}timestamp`);
+            }
+            let ctx = new AudioContext();
+            let audioList = [];
+            let flag = true;
+
+            function playAudio() {
+                let player = ctx.createBufferSource();
+                player.buffer = audioList[0];
+                player.connect(ctx.destination);
+                player.start(ctx.currentTime);
+                player.onended = () => {
+                    audioList.shift();
+                    flag = true;
+                    if (audioList.length) {
+                        playAudio()
+                        flag = false;
+                    };
+                }
+            }
+
+            websocket.onmessage = function (event) {
+                // 判断是否为音频数据
+                if (event.data instanceof Blob) {
+                    // 将Blob对象转换成ArrayBuffer对象
+                    event.data.arrayBuffer().then(buffer => {
+                        ctx.decodeAudioData(buffer, decodedData => {
+                            audioList.push(decodedData);
+                            if (flag) {
+                                playAudio();
+                                flag = false;
+                            }
+                        });
+                    });
+
+                    // // 创建一个URL对象，将Blob数据转换成Object URL
+                    // const url = URL.createObjectURL(event.data);
+                    // // 创建一个<audio>元素，用于播放音频
+                    // const audioElement = document.createElement('audio');
+                    // audioElement.src = url;
+                    // audioElement.controls = "controls";
+                    // // 将<audio>元素添加到DOM文档中
+                    // const messagesDiv = document.getElementById("messages");
+                    // messagesDiv.appendChild(audioElement);
+                    // messagesDiv.appendChild(document.createElement('br'));
+                } else {
+                    let message = event.data;
+                    console.log("Received message: " + message);
+                    let messagesDiv = document.getElementById("messages");
+                    messagesDiv.innerHTML += message + "<br>";
+                }
+            }
+            websocket.onerror = function (event) {
+                console.log("Error occurred: " + event);
+            }
+        }
+        function sendMessage() {
+            var message = document.getElementById("message").value;
+            if (message) {
+                websocket.send(message);
+                console.log("Sent message: " + message);
+                document.getElementById("message").value = "";
+            }
+        }
+
+        function getUserVoice() {
+            // 获取用户权限，创建媒体流对象
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    // 创建 MediaRecorder 实例
+                    const mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorder.ondataavailable = e => {
+                        if (e.data.size > 0) {
+                            const blob = new Blob([e.data], { type: 'audio/web; codecs=opus' });
+                            // 将音频数据发送给服务器
+                            websocket.send(blob);
+                        }
+                    };
+                    mediaRecorder.start();
+                })
+                .catch(err => {
+                    console.log(`getUserMedia failed: ${err}`);
+                });
+        }
+    </script>
+
+</head>
+
+<body>
+    <div>
+        <input type="text" id="message">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+    <div id="messages"></div>
+    <div id="audioclips"></div>
+</body>
+<script>
+    let audioClips = document.getElementById('audioclips');
+    let isRecording = false;
+    let mediaRecorder;
+    let chunks = [];
+
+    // // 开始录音
+    // function startRecording() {
+    //     navigator.mediaDevices.getUserMedia({ audio: true })
+    //         .then(function (stream) {
+    //             mediaRecorder = new MediaRecorder(stream);
+    //             mediaRecorder.start();
+
+    //             mediaRecorder.addEventListener("dataavailable", function (event) {
+    //                 chunks.push(event.data);
+    //             });
+    //         });
+    // }
+
+    // // 监听空格键按下事件，开始录音
+    // document.addEventListener('keydown', function (e) {
+    //     if (e.code === "Space" && isRecording === false) {
+    //         console.log("开始录音");
+    //         isRecording = true;
+    //         startRecording();
+    //     }
+    // });
+
+    // // 监听空格键松开事件，停止录音
+    // document.addEventListener('keyup', function (e) {
+    //     if (e.code === "Space" && isRecording === true) {
+    //         console.log("停止录音");
+    //         isRecording = false;
+    //         mediaRecorder.stop();
+    //         mediaRecorder.addEventListener("stop", function () {
+    //             let audioBlob = new Blob(chunks, { 'type': 'audio/wav' });
+    //             // websocket.send(audioBlob);
+    //             let audioURL = URL.createObjectURL(audioBlob);
+    //             console.log(audioURL)
+    //             let audio = new Audio(audioURL);
+    //             audio.setAttribute('controls', '');
+    //             audioClips.appendChild(audio);
+    //             chunks = [];
+    //         });
+    //     }
+    // });
+</script>
+
+</html>
